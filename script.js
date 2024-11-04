@@ -100,97 +100,175 @@ function checkAnswer() {
 // Função Explorador de Habilidades
 async function fetchAbilities() {
     const pokemonId = document.getElementById("abilityPokeId").value;
+    const abilityImage = document.getElementById("abilityImage");
+    
+    if (!pokemonId) {
+        document.getElementById("abilityList").textContent = "Por favor, insira um ID de Pokémon.";
+        abilityImage.style.display = "none"; // Esconde a imagem se não houver ID
+        return;
+    }
+
     const data = await fetchPoke(pokemonId);
     if (data) {
         const abilities = data.abilities.map(ability => ability.ability.name).join(", ");
         document.getElementById("abilityList").textContent = `Habilidades: ${abilities}`;
-    } else {
-        document.getElementById("abilityList").textContent = "Erro ao buscar habilidades.";
-    }
-}
-
-// Função Mapa de Localização
-async function fetchLocation(pokemonId) {
-    const url = `https://pokeapi.co/api/v2/pokemon/${pokemonId}/encounters`;
-    try {
-        const response = await fetch(url);
-        const data = await response.json();
-        const locations = data.map(loc => loc.location_area.name).join(", ");
-        document.getElementById("locationList").textContent = `Localizações: ${locations}`;
-    } catch (error) {
-        console.error(error);
-        document.getElementById("locationList").textContent = "Erro ao buscar localizações.";
+        
+        // Atualiza a imagem do Pokémon
+        abilityImage.src = data.sprites.front_default; // URL da imagem
+        abilityImage.style.display = "block"; // Exibe a imagem
     }
 }
 
 // Função Simulador de Batalhas
+async function showBattleImage(id, player) {
+    const img = document.getElementById(`battleImage${player}`);
+    const data = await fetchPoke(id);
+    img.src = data.sprites.front_default;
+    img.style.display = "block"; // Exibe a imagem
+}
+
 async function simulateBattle() {
     const poke1Id = document.getElementById("battlePoke1").value;
     const poke2Id = document.getElementById("battlePoke2").value;
-    if (!poke1Id || !poke2Id) return alert("Escolha dois Pokémon.");
+
+    if (!poke1Id || !poke2Id) {
+        document.getElementById("battleResult").textContent = "Por favor, insira os IDs de dois Pokémon.";
+        return;
+    }
 
     const poke1 = await fetchPoke(poke1Id);
     const poke2 = await fetchPoke(poke2Id);
-    const winner = Math.random() > 0.5 ? poke1 : poke2;
-    document.getElementById("battleResult").textContent = `Vencedor: ${winner.name}`;
+
+    const winner = Math.random() < 0.5 ? poke1 : poke2;
+    document.getElementById("battleResult").textContent = `${winner.name.charAt(0).toUpperCase() + winner.name.slice(1)} venceu!`;
 }
 
 // Função Enciclopédia de Tipos
 async function fetchTypeInfo() {
-    const typeId = document.getElementById("typeId").value;
-    const url = `https://pokeapi.co/api/v2/type/${typeId}`;
-    try {
-        const response = await fetch(url);
-        const data = await response.json();
-        const pokemonList = data.pokemon.map(p => p.pokemon.name).join(", ");
-        document.getElementById("typeInfo").textContent = `Pokémon do Tipo: ${pokemonList}`;
-    } catch (error) {
-        console.error(error);
-        document.getElementById("typeInfo").textContent = "Erro ao buscar informações do tipo.";
+    const typeName = document.getElementById('typeName').value.toLowerCase();
+    const typeImage = document.getElementById('typeImage');
+    const typeInfoDiv = document.getElementById('typeInfo');
+    
+    // Resetando a imagem e as informações
+    typeImage.style.display = "none"; 
+    typeInfoDiv.innerHTML = "";
+
+    if (mainTypes.includes(typeName)) {
+        typeImage.src = `path/to/type/images/${typeName}.png`; // Substitua pelo caminho correto das imagens
+        typeImage.style.display = "block"; 
+
+        const response = await fetch(`https://pokeapi.co/api/v2/type/${typeName}`);
+        const typeData = await response.json();
+
+        // Exibindo informações do tipo
+        const pokemonList = typeData.pokemon.map(poke => poke.pokemon.name).join(", ");
+        typeInfoDiv.innerHTML = `<p>Pokémon do Tipo ${typeName.charAt(0).toUpperCase() + typeName.slice(1)}: ${pokemonList}</p>`;
+    } else {
+        typeInfoDiv.innerHTML = "<p>Tipo inválido. Tente novamente.</p>";
     }
 }
 
 // Função Árvore de Evolução
 async function fetchEvolution() {
-    const speciesId = document.getElementById("evolutionPokeId").value;
-    const speciesUrl = `https://pokeapi.co/api/v2/pokemon-species/${speciesId}`;
-    try {
-        const response = await fetch(speciesUrl);
-        const speciesData = await response.json();
-        const evolutionChainUrl = speciesData.evolution_chain.url;
+    const pokemonId = document.getElementById("evolutionPokeId").value;
+    const evolutionList = document.getElementById("evolutionList");
+    const evolutionImages = document.getElementById("evolutionImages");
 
-        const evolutionResponse = await fetch(evolutionChainUrl);
-        const evolutionData = await evolutionResponse.json();
+    evolutionList.innerHTML = "";
+    evolutionImages.innerHTML = "";
 
-        function parseEvolution(evolvesTo) {
-            const names = [evolvesTo.species.name];
-            evolvesTo.evolves_to.forEach(evolution => names.push(...parseEvolution(evolution)));
-            return names;
+    const data = await fetchPoke(pokemonId);
+    if (data) {
+        const speciesUrl = data.species.url;
+        const speciesResponse = await fetch(speciesUrl);
+        const speciesData = await speciesResponse.json();
+
+        let evolvesFrom = null;
+        let evolvesTo = [];
+
+        if (speciesData.evolves_from_species) {
+            const evolvesFromUrl = speciesData.evolves_from_species.url;
+            const evolvesFromResponse = await fetch(evolvesFromUrl);
+            evolvesFrom = (await evolvesFromResponse.json()).name;
         }
 
-        const evolutionNames = parseEvolution(evolutionData.chain);
-        document.getElementById("evolutionList").textContent = `Evoluções: ${evolutionNames.join(" → ")}`;
-    } catch (error) {
-        console.error(error);
-        document.getElementById("evolutionList").textContent = "Erro ao buscar evoluções.";
+        const evolutionChainUrl = speciesData.evolution_chain.url;
+        const evolutionChainResponse = await fetch(evolutionChainUrl);
+        const evolutionChainData = await evolutionChainResponse.json();
+
+        const findEvolution = (chain) => {
+            if (chain.species.name === data.name) {
+                return chain;
+            }
+            if (chain.evolves_to.length > 0) {
+                for (const evolution of chain.evolves_to) {
+                    const result = findEvolution(evolution);
+                    if (result) return result;
+                }
+            }
+            return null;
+        };
+
+        const currentEvolution = findEvolution(evolutionChainData.chain);
+        if (currentEvolution) {
+            currentEvolution.evolves_to.forEach(evolution => {
+                evolvesTo.push(evolution.species.name);
+                if (evolution.evolves_to.length > 0) {
+                    evolution.evolves_to.forEach(subEvolution => {
+                        evolvesTo.push(subEvolution.species.name);
+                    });
+                }
+            });
+        }
+
+        let evolutionText = `${data.name.charAt(0).toUpperCase() + data.name.slice(1)}`;
+
+        if (evolvesFrom) {
+            evolutionText += ` evolui de ${evolvesFrom.charAt(0).toUpperCase() + evolvesFrom.slice(1)}`;
+        }
+
+        if (evolvesTo.length > 0) {
+            evolutionText += ` e evolui para ${evolvesTo.map(name => name.charAt(0).toUpperCase() + name.slice(1)).join(', ')}.`;
+        } else {
+            evolutionText += ` não evolui para mais ninguém.`;
+        }
+
+        if (!evolvesFrom && evolvesTo.length === 0) {
+            evolutionText = `${data.name.charAt(0).toUpperCase() + data.name.slice(1)} é de estágio único.`;
+        }
+
+        evolutionList.innerHTML = `<p>${evolutionText}</p>`;
+
+        // Exibindo imagens do Pokémon atual, antecessor e sucessores
+        if (evolvesFrom) {
+            const fromData = await fetchPoke(evolvesFrom);
+            evolutionImages.innerHTML += `<img src="${fromData.sprites.front_default}" alt="${fromData.name}">`;
+        }
+        evolutionImages.innerHTML += `<img src="${data.sprites.front_default}" alt="${data.name}">`;
+        for (const name of evolvesTo) {
+            const toData = await fetchPoke(name);
+            evolutionImages.innerHTML += `<img src="${toData.sprites.front_default}" alt="${toData.name}">`;
+        }
     }
 }
 
 // Função Construtor de Equipes
 const team = [];
 
-async function addToTeam() {
+function addToTeam() {
     const pokeId = document.getElementById("teamPokeId").value;
-    if (!pokeId) return alert("Insira um ID de Pokémon.");
-
-    const pokemon = await fetchPoke(pokeId);
-    if (team.length >= 6) {
-        alert("A equipe já possui 6 Pokémon.");
+    if (!pokeId || team.includes(pokeId)) {
+        alert("Por favor, insira um ID válido e que ainda não esteja na equipe.");
         return;
     }
     
-    team.push(pokemon);
-    document.getElementById("teamList").innerHTML = team
-        .map(poke => `<p>${poke.name}</p>`)
-        .join("");
+    team.push(pokeId);
+    document.getElementById("teamList").innerHTML += `<p>Pokémon ID: ${pokeId}</p>`;
+    showTeamPokemonImage(pokeId);
+}
+
+async function showTeamPokemonImage(id) {
+    const data = await fetchPoke(id);
+    const imgContainer = document.getElementById("teamPokemonImage");
+    imgContainer.innerHTML += `<img src="${data.sprites.front_default}" alt="${data.name}" style="width: 50px; height: 50px;">`;
 }
