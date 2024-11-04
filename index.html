@@ -3,37 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pokedex Expandida</title>
+    <title>Pokedex Completa</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body onload="renderCards('')">
-    <h1>Pokedex Expandida</h1>
+    <h1>Pokedex Completa</h1>
 
     <div class="main">
-
-        <div class="search">
-            <label for="sName">Nome:</label>
-            <input type="text" id="sName" placeholder="Buscar Pokémon">
+        <div class="search" id="search">
+            <label for="sName">Nome: </label>
+            <input type="text" name="sName" id="sName">
             <button id="btnProcurar" onclick="setSelector()">Procurar</button>
         </div>
         <div class="pokeContainer" id="pokeContainer"></div>
+    </div>
 
-        <div class="compare-section">
-            <h2>Comparador de Pokémon</h2>
-            <div>
-                <label for="poke1">Pokémon 1:</label>
-                <input type="number" id="poke1" min="1" max="151" placeholder="ID 1-151">
-                <label for="poke2">Pokémon 2:</label>
-                <input type="number" id="poke2" min="1" max="151" placeholder="ID 1-151">
-                <button onclick="comparePokemon()">Comparar</button>
-            </div>
-            <div id="compareResult"></div>
+    <div class="quiz-section">
+        <h2>Jogo de Perguntas sobre Pokémon</h2>
+        <button onclick="startQuiz()">Iniciar Jogo</button>
+        <div id="quiz" class="quiz">
+            <img id="quizImage" src="" alt="Pokémon">
+            <input type="text" id="quizAnswer" placeholder="Nome do Pokémon">
+            <button onclick="checkAnswer()">Enviar Resposta</button>
+            <p id="quizFeedback"></p>
         </div>
+    </div>
 
-        <div class="ability-section">
-            <h2>Explorador de Habilidades</h2>
-            <div id="abilities"></div>
-        </div>
+    <div class="ability-section">
+        <h2>Explorador de Habilidades</h2>
+        <input type="number" id="abilityPokeId" min="1" max="151" placeholder="ID do Pokémon">
+        <button onclick="fetchAbilities()">Ver Habilidades</button>
+        <div id="abilityData"></div>
+    </div>
+
+    <div class="location-section">
+        <h2>Mapa de Localização Pokémon</h2>
+        <button onclick="fetchLocation(1)">Ver Locais do Bulbasaur</button>
+        <div id="locationData"></div>
+    </div>
+
+    <div class="battle-section">
+        <h2>Simulador de Batalhas Pokémon</h2>
+        <label for="battlePoke1">Pokémon 1:</label>
+        <input type="number" id="battlePoke1" min="1" max="151" placeholder="ID 1-151">
+        <label for="battlePoke2">Pokémon 2:</label>
+        <input type="number" id="battlePoke2" min="1" max="151" placeholder="ID 1-151">
+        <button onclick="simulateBattle()">Batalhar</button>
+        <p id="battleResult"></p>
+    </div>
+
+    <div class="type-encyclopedia">
+        <h2>Enciclopédia de Tipos de Pokémon</h2>
+        <button onclick="fetchTypeInfo()">Mostrar Tipos</button>
+        <div id="typeInfo"></div>
+    </div>
+
+    <div class="evolution-section">
+        <h2>Árvore de Evolução</h2>
+        <input type="number" id="evolutionPokeId" min="1" max="151" placeholder="ID do Pokémon">
+        <button onclick="fetchEvolution()">Ver Evolução</button>
+        <div id="evolutionData"></div>
+    </div>
+
+    <div class="team-builder">
+        <h2>Construtor de Equipes Pokémon</h2>
+        <input type="number" id="teamPokeId" min="1" max="151" placeholder="ID do Pokémon">
+        <button onclick="addToTeam()">Adicionar à Equipe</button>
+        <div id="teamList"></div>
     </div>
 
     <script src="script.js"></script>
