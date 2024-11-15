@@ -1,4 +1,6 @@
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -9,43 +11,56 @@ body {
   background-color: #f0f8ff;
   color: #333;
   line-height: 1.6;
+  font-size: 16px;
 }
 
 header {
   background: linear-gradient(to right, #ff6f61, #ff3f34);
-  color: white;
-  padding: 1rem 2rem;
+  color: #ffffff;
+  padding: 1.5rem;
   text-align: center;
 }
 
 h1 {
   font-size: 2.5rem;
+  font-weight: bold;
   margin-bottom: 1rem;
 }
 
 input[type="text"],
 input[type="number"] {
-  padding: 0.5rem;
+  padding: 0.6rem;
   margin: 0.5rem 0;
   border: 2px solid #ff6f61;
   border-radius: 5px;
   width: 80%;
   max-width: 300px;
+  color: #333;
+  background-color: #ffffff;
+  transition: border-color 0.3s ease;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus {
+  border-color: #ff3f34;
+  outline: none;
 }
 
 button {
   background-color: #ff6f61;
-  color: white;
+  color: #ffffff;
   border: none;
   border-radius: 5px;
-  padding: 0.5rem 1rem;
+  padding: 0.6rem 1.2rem;
   cursor: pointer;
   font-size: 1rem;
-  transition: background-color 0.3s ease;
+  font-weight: bold;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 button:hover {
   background-color: #ff3f34;
+  transform: translateY(-2px);
 }
 
 main {
@@ -55,128 +70,125 @@ main {
   align-items: center;
 }
 
-#pokeContainer {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 1rem;
-  margin: 1rem 0;
-  width: 100%;
+body.dark-mode {
+  background-color: #1a1a1a;
+  color: #d32f2f; 
 }
 
+header.dark-mode {
+  background: linear-gradient(to right, #333333, #222222);
+  color: #d32f2f;
+}
+
+h1.dark-mode,
+h2.dark-mode,
+p.dark-mode {
+  color: #d32f2f; 
+}
+
+input[type="text"].dark-mode,
+input[type="number"].dark-mode {
+  border: 2px solid #444;
+  background-color: #2b2b2b;
+  color: #d32f2f; 
+}
+
+button.dark-mode {
+  background-color: #d32f2f;
+  color: #ffffff;
+}
+
+button.dark-mode:hover {
+  background-color: #b71c1c;
+}
+
+
 .card {
-  background: white;
-  border: 2px solid #ff6f61;
+  background-color: #ffffff;
+  border: 2px solid #d32f2f; 
   border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  transition: transform 0.3s;
-  text-align: center; /* Centraliza o texto no cartão */
+  padding: 1rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .card:hover {
   transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
-.imgContainer {
-  text-align: center;
+.card.dark-mode {
+  background-color: #2b2b2b;
+  color: #d32f2f; 
+  border: 2px solid #d32f2f; 
 }
 
-.imgContainer img {
-  width: 100%;
-  height: auto;
+.pokemonBox.dark-mode {
+  background-color: #333;
+  border-color: #444;
 }
 
-.info {
-  padding: 1rem;
-  text-align: center;
+h2.dark-mode {
+  color: #d32f2f;
 }
 
-.number {
-  font-weight: bold;
+footer.dark-mode {
+  background-color: #333;
+  color: #d32f2f;
 }
 
-h2 {
-  margin-top: 2rem;
-  margin-bottom: 1rem;
-  color: #ff6f61;
+#teamPokemonImage {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-top: 1.5rem;
 }
 
-.pokemonBox {
-  background-color: #ff6f61; /* Cor padrão */
-  border: 2px solid #ff3f34;
-  border-radius: 8px;
-  padding: 1rem;
-  margin: 0.5rem;
+.team-member {
   display: flex;
   flex-direction: column;
   align-items: center;
-  color: white;
-}
-
-.pokemonBox img {
-  width: 80px; /* Ajuste o tamanho da imagem conforme necessário */
-  height: auto;
-  margin-bottom: 0.5rem;
-}
-
-#quizImage,
-#abilityImage,
-#battleImage1,
-#battleImage2,
-#typeImage {
-  max-width: 100%;
-  height: auto;
-  margin-top: 1rem;
-}
-
-#abilityList,
-#evolutionList,
-#teamList {
-  margin-top: 1rem;
-}
-
-#teamPokemonImage img {
-  margin: 0.5rem;
-}
-
-footer {
-  text-align: center;
-  margin-top: 2rem;
+  background-color: #f0f8ff;
+  border: 2px solid #d32f2f; 
+  border-radius: 10px;
   padding: 1rem;
-  background-color: #ff6f61;
-  color: white;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.evolution-images {
-  display: flex;
-  justify-content: center; 
-  align-items: center; 
+.team-member:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
-.evolution-images img {
-  margin: 0 10px; 
-  width: 80px; 
-  height: 80px; 
+.team-member.dark-mode {
+  background-color: #2b2b2b;
+  border-color: #d32f2f;
 }
 
-@media (max-width: 600px) {
-  header {
-    padding: 1rem;
-  }
-
-  h1 {
-    font-size: 2rem;
-  }
-
-  button {
-    width: 90%;
-  }
+.team-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin-bottom: 0.5rem;
+  border: 2px solid #d32f2f;
 }
-input[type="number"] {
-  padding: 0.5rem;
-  margin: 0.5rem 0;
-  border: 2px solid #ff6f61;
-  border-radius: 5px;
-  width: 80%;
-  max-width: 300px;
+
+.team-name {
+  font-weight: bold;
+  color: #333; 
+  margin-top: 0.5rem;
+}
+
+.team-name.dark-mode {
+  color: #e0e0e0;
+}
+
+#pokeContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+  width: 100%;
 }
