@@ -27,7 +27,33 @@ document.getElementById("sName").addEventListener("keypress", function (event) {
     document.getElementById("btnProcurar").click();
   }
 });
+function toggleDarkMode() {
+    document.body.classList.toggle("dark-mode");
+    document.querySelector("header").classList.toggle("dark-mode");
+    document.querySelector("h1").classList.toggle("dark-mode");
+    
+    document.querySelectorAll("input[type='text'], input[type='number']").forEach(input => {
+        input.classList.toggle("dark-mode");
+    });
 
+    document.querySelectorAll("button").forEach(button => {
+        button.classList.toggle("dark-mode");
+    });
+
+    document.querySelectorAll(".card").forEach(card => {
+        card.classList.toggle("dark-mode");
+    });
+
+    document.querySelectorAll(".pokemonBox").forEach(box => {
+        box.classList.toggle("dark-mode");
+    });
+
+    document.querySelectorAll("h2").forEach(h2 => {
+        h2.classList.toggle("dark-mode");
+    });
+
+    document.querySelector("footer").classList.toggle("dark-mode");
+}
 // Funções da Pokédex Básica e Filtro
 async function fetchPoke(id) {
   const url = `https://pokeapi.co/api/v2/pokemon/${id}`;
@@ -86,7 +112,7 @@ async function createCard(i) {
         <div class="info">
             <p class="number">#${id}</p>
             <p class="name">${name}</p>
-            <p class="type">Type: ${types.join(", ")}</p>
+            <p class="type">Type: ${types.join(" and ")}</p>
         </div>
     `;
 
@@ -135,8 +161,8 @@ async function fetchAbilities() {
     ).textContent = `Habilidades: ${abilities}`;
 
     // Atualiza a imagem do Pokémon
-    abilityImage.src = data.sprites.front_default; // URL da imagem
-    abilityImage.style.display = "block"; // Exibe a imagem
+    abilityImage.src = data.sprites.front_default; 
+    abilityImage.style.display = "block"; 
   }
 }
 
@@ -144,12 +170,11 @@ async function fetchAbilities() {
 async function simulateBattle() {
   const poke1Id = document.getElementById("battlePoke1").value;
   const poke2Id = document.getElementById("battlePoke2").value;
-  const level1 = parseInt(document.getElementById("battleLevel1").value) || 50; // Nível do Pokémon 1
-  const level2 = parseInt(document.getElementById("battleLevel2").value) || 50; // Nível do Pokémon 2
+  const level1 = parseInt(document.getElementById("battleLevel1").value) || 50;
+  const level2 = parseInt(document.getElementById("battleLevel2").value) || 50;
 
   if (!poke1Id || !poke2Id) {
-    document.getElementById("battleResult").textContent =
-      "Por favor, insira os IDs de dois Pokémon.";
+    document.getElementById("battleResult").textContent = "Por favor, insira os IDs de dois Pokémon.";
     return;
   }
 
@@ -157,10 +182,20 @@ async function simulateBattle() {
   const poke2 = await fetchPoke(poke2Id);
 
   if (!poke1 || !poke2) {
-    document.getElementById("battleResult").textContent =
-      "Não foi possível carregar os dados dos Pokémon.";
+    document.getElementById("battleResult").textContent = "Não foi possível carregar os dados dos Pokémon.";
     return;
   }
+
+  // Exibe as imagens dos Pokémon para a batalha em caixinhas
+  document.getElementById("battleImages").innerHTML = `
+    <div class="battle-pokemon">
+      <img src="${poke1.sprites.front_default}" alt="${poke1.name}" class="battle-image">
+      <p>${poke1.name.charAt(0).toUpperCase() + poke1.name.slice(1)} (Nível ${level1})</p>
+    </div>
+    <div class="battle-pokemon">
+      <img src="${poke2.sprites.front_default}" alt="${poke2.name}" class="battle-image">
+      <p>${poke2.name.charAt(0).toUpperCase() + poke2.name.slice(1)} (Nível ${level2})</p>
+    </div>`;
 
   const winner = calculateBattleOutcome(poke1, poke2, level1, level2);
   document.getElementById("battleResult").textContent = `${
@@ -193,10 +228,10 @@ function calculateBattleOutcome(poke1, poke2, level1, level2) {
   const poke1Type = poke1.types[0].type.name;
   const poke2Type = poke2.types[0].type.name;
 
-  const poke1Atk = poke1.stats[1].base_stat; // Ataque
-  const poke1Def = poke1.stats[2].base_stat; // Defesa
-  const poke2Atk = poke2.stats[1].base_stat; // Ataque
-  const poke2Def = poke2.stats[2].base_stat; // Defesa
+  const poke1Atk = poke1.stats[1].base_stat; 
+  const poke1Def = poke1.stats[2].base_stat; 
+  const poke2Atk = poke2.stats[1].base_stat; 
+  const poke2Def = poke2.stats[2].base_stat; 
 
   const poke1TypeMultiplier = typeEffectiveness[poke1Type]?.[poke2Type] || 1;
   const poke2TypeMultiplier = typeEffectiveness[poke2Type]?.[poke1Type] || 1;
@@ -316,11 +351,11 @@ async function fetchEvolution() {
     }
 
     if (evolvesTo.length > 0) {
-      evolutionText += ` e evolui para ${evolvesTo
+      evolutionText += ` evolui para ${evolvesTo
         .map((name) => name.charAt(0).toUpperCase() + name.slice(1))
-        .join(", ")}.`;
+        .join(" e ")}.`;
     } else {
-      evolutionText += ` não evolui para mais ninguém.`;
+      evolutionText += ` e não evolui para mais ninguém.`;
     }
 
     if (!evolvesFrom && evolvesTo.length === 0) {
@@ -330,8 +365,6 @@ async function fetchEvolution() {
     }
 
     evolutionList.innerHTML = `<p>${evolutionText}</p>`;
-
-    // Exibindo imagens do Pokémon atual, antecessor e sucessores
     if (evolvesFrom) {
       const fromData = await fetchPoke(evolvesFrom);
       evolutionImages.innerHTML += `<img src="${fromData.sprites.front_default}" alt="${fromData.name}">`;
@@ -350,14 +383,12 @@ async function showBattleImage(pokeId, pokeNumber) {
     const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokeId}`);
     const pokemon = await response.json();
     const imgUrl = pokemon.sprites.front_default;
-
-    // Seleciona a imagem correspondente
     const imgElement =
       pokeNumber === 1
         ? document.getElementById("battleImage1")
         : document.getElementById("battleImage2");
     imgElement.src = imgUrl;
-    imgElement.style.display = "block"; // Exibe a imagem
+    imgElement.style.display = "block"; 
   } catch (error) {
     console.error("Erro ao carregar a imagem do Pokémon:", error);
   }
@@ -368,20 +399,50 @@ const team = [];
 
 function addToTeam() {
   const pokeId = document.getElementById("teamPokeId").value;
+
+  if (team.length >= 6) {
+    alert("O time já está completo! Máximo de 6 Pokémon.");
+    return;
+  }
+  
   if (!pokeId || team.includes(pokeId)) {
     alert("Por favor, insira um ID válido e que ainda não esteja na equipe.");
     return;
   }
 
   team.push(pokeId);
-  document.getElementById(
-    "teamList"
-  ).innerHTML += `<p>Pokémon ID: ${pokeId}</p>`;
-  showTeamPokemonImage(pokeId);
+  showTeamPokemon(pokeId);
 }
 
-async function showTeamPokemonImage(id) {
+async function showTeamPokemon(id) {
   const data = await fetchPoke(id);
   const imgContainer = document.getElementById("teamPokemonImage");
-  imgContainer.innerHTML += `<img src="${data.sprites.front_default}" alt="${data.name}" style="width: 50px; height: 50px;">`;
+
+  // Define a cor de fundo com base no tipo principal do Pokémon
+  const primaryType = data.types[0].type.name;
+  const bgColor = colors[primaryType] || "#F0F0F0"; // Cor padrão se o tipo não estiver no objeto `colors`
+
+  // Adiciona o Pokémon com estilo baseado no tipo
+  imgContainer.innerHTML += `
+    <div class="team-member" style="background-color: ${bgColor};">
+      <img src="${data.sprites.front_default}" alt="${data.name}" class="team-image">
+      <p class="team-name">${data.name}</p>
+    </div>`;
+}
+
+// Função para buscar dados do Pokémon com base no ID
+async function fetchPoke(id) {
+  const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
+  return response.json();
+}
+
+function toggleDarkMode() {
+  document.body.classList.toggle("dark-mode");
+  document.querySelector("header").classList.toggle("dark-mode");
+  document.querySelector("footer").classList.toggle("dark-mode");
+  document.querySelectorAll("input").forEach((el) => el.classList.toggle("dark-mode"));
+  document.querySelectorAll("button").forEach((el) => el.classList.toggle("dark-mode"));
+  document.querySelectorAll(".card").forEach((el) => el.classList.toggle("dark-mode"));
+  document.querySelectorAll(".pokemonBox").forEach((el) => el.classList.toggle("dark-mode"));
+  document.querySelectorAll("h1, h2").forEach((el) => el.classList.toggle("dark-mode"));
 }
