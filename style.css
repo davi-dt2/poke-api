@@ -102,7 +102,6 @@ button.dark-mode:hover {
   background-color: #b71c1c;
 }
 
-
 .card {
   background-color: #ffffff;
   border: 2px solid #d32f2f; 
@@ -191,4 +190,155 @@ footer.dark-mode {
   gap: 1rem;
   margin: 1.5rem 0;
   width: 100%;
+}
+
+/* Estilos do Pop-up */
+.popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.popup-content {
+  width: 80%;
+  max-width: 900px;
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  position: relative;
+}
+
+.popup-column {
+  width: 30%;
+  padding: 10px;
+  overflow-y: auto;
+}
+
+.popup-column h3 {
+  margin-top: 0;
+  font-size: 1.2em;
+}
+
+.popup-column ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.popup-column ul li {
+  padding: 5px 0;
+  display: flex;
+  align-items: center;
+}
+
+.popup-column ul li img {
+  width: 50px;
+  height: 50px;
+  margin-right: 10px;
+}
+
+.popup img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.popup .close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 1.5em;
+  cursor: pointer;
+}
+
+.popup-columns {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+/* Responsividade para dispositivos móveis */
+@media (max-width: 768px) {
+  /* Modifica o layout das cartas */
+  #pokeContainer {
+    grid-template-columns: 1fr;
+  }
+
+  /* Ajusta o layout do pop-up para telas pequenas */
+  .popup-content {
+    flex-direction: column;
+    width: 90%;
+    max-width: none;
+    padding: 15px;
+  }
+
+  /* Ajusta as colunas do pop-up */
+  .popup-column {
+    width: 100%;
+    padding: 10px;
+  }
+
+  .popup img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+    margin-bottom: 15px;
+  }
+
+  .popup .close-btn {
+    font-size: 1.2em;
+    top: 5px;
+    right: 5px;
+  }
+
+  /* Ajusta o botão de busca */
+  button {
+    width: 100%;
+    padding: 0.8rem 0;
+    font-size: 1.2rem;
+  }
+
+  /* Ajusta os campos de entrada */
+  input[type="text"],
+  input[type="number"] {
+    width: 90%;
+  }
+}
+
+/* Para telas muito pequenas */
+@media (max-width: 480px) {
+  header {
+    padding: 1rem;
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+
+  .team-image {
+    width: 60px;
+    height: 60px;
+  }
+
+  .card {
+    padding: 0.8rem;
+  }
+
+  .card .info {
+    font-size: 0.9rem;
+  }
+
+  button {
+    font-size: 1rem;
+  }
 }
