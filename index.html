@@ -18,13 +18,14 @@
   <main>
     <div id="pokeContainer"></div>
 
-    <section id="quiz">
-      <h2>Jogo de Perguntas</h2>
-      <img id="quizImage" src="" alt="Pokémon" />
-      <input type="text" id="quizAnswer" placeholder="Qual o Pokémon?" />
-      <button onclick="checkAnswer()">Responder</button>
-      <div id="quizFeedback"></div>
-    </section>
+<section id="quiz">
+  <h2>Jogo de Perguntas</h2>
+  <img id="quizImage" src="" alt="Pokémon" />
+  <input type="text" id="quizAnswer" placeholder="Quem é esse Pokémon?" />
+  <button onclick="checkAnswer()">Responder</button>
+  <button onclick="nextQuestion()">Próximo</button> 
+  <div id="quizFeedback"></div>
+</section>
 
     <div id="abilityContainer">
       <h2>Explorador de Habilidades</h2>
@@ -56,15 +57,6 @@
       <img id="typeImage" src="" alt="Pokémon do Tipo" style="display: none;">
       <button onclick="fetchTypeInfo()">Buscar Tipo</button>
       <div id="typeInfo"></div>
-    </section>
-
-    <!-- Árvore de Evolução -->
-    <section id="evolutionContainer">
-      <h2>Árvore de Evolução</h2>
-      <input type="number" id="evolutionPokeId" placeholder="ID do Pokémon" onchange="showEvolutionImage(this.value)">
-      <button onclick="fetchEvolution()">Buscar Evolução</button>
-      <div id="evolutionList"></div>
-      <div id="evolutionImages" class="evolution-images" style="margin-top: 10px;"></div>
     </section>
 
     <!-- Construtor de Equipes -->
