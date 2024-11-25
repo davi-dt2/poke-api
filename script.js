@@ -54,7 +54,7 @@ function toggleDarkMode() {
 
     document.querySelector("footer").classList.toggle("dark-mode");
 }
-// Funções da Pokédex Básica e Filtro
+// Função para buscar os dados do Pokémon
 async function fetchPoke(id) {
   const url = `https://pokeapi.co/api/v2/pokemon/${id}`;
   try {
@@ -74,19 +74,22 @@ function setSelector() {
 
 async function filter(selector, i) {
   const data = await fetchPoke(i);
-  return data.name.toUpperCase().includes(selector);
+  return data.name.toUpperCase().includes(selector);  // Verifica se o nome do Pokémon contém o valor do filtro
 }
 
 async function renderCards(selector) {
   const div = document.querySelector("#pokeContainer");
+
+  // Limpar todos os Pokémon na tela antes de exibir os novos
   while (div.firstChild) {
     div.removeChild(div.firstChild);
   }
 
+  // Renderizar os Pokémon filtrados
   for (let i = 1; i <= pokeCount; i++) {
     const match = await filter(selector, i);
     if (!selector || match) {
-      await createCard(i);
+      await createCard(i);  // Chama a função para criar o card
     }
   }
 }
@@ -101,9 +104,9 @@ async function createCard(i) {
   const id = data.id.toString().padStart(3, "0");
   const types = data.types.map((type) => type.type.name);
   const mainType = types[0];
-  const color = colors[mainType] || "#F5F5F5";
+  const color = colors[mainType] || "#F5F5F5";  // Cor baseada no tipo do Pokémon
 
-  card.style.backgroundColor = color;
+  card.style.backgroundColor = color;  // Aplica a cor de fundo com base no tipo principal
 
   const pokeInnerHTML = `
         <div class="imgContainer">
@@ -117,27 +120,248 @@ async function createCard(i) {
     `;
 
   card.innerHTML = pokeInnerHTML;
-  document.querySelector("#pokeContainer").appendChild(card);
+
+// Adiciona evento de clique na carta para abrir o pop-up
+card.addEventListener("click", () => {
+  openPopup(data);  // Chama a função para abrir o pop-up com as informações do Pokémon
+});
+
+document.querySelector("#pokeContainer").appendChild(card);
+}
+
+// Função para abrir o pop-up com as informações do Pokémon
+async function openPopup(data) {
+  console.log("Abrindo pop-up para o Pokémon:", data);  // Verifique os dados do Pokémon no console
+
+  // Obtém o tipo principal do Pokémon para definir a cor do fundo
+  const types = data.types.map(type => type.type.name);
+  const mainType = types[0];  // O primeiro tipo é o tipo principal
+  const color = colors[mainType] || "#F5F5F5";  // Usamos a mesma cor que nas cartas, ou um padrão
+
+  // Converte peso e altura para unidades mais compreensíveis
+  const heightInMeters = (data.height / 10).toFixed(2);  // altura em metros (decímetros para metros)
+  const weightInKg = (data.weight / 10).toFixed(2);  // peso em quilos (hectogramas para quilos)
+
+  // Busca a cadeia de evolução do Pokémon
+  const evolutionChain = await fetchEvolutionChain(data.id);
+
+  // Cria o pop-up
+  const popup = document.createElement("div");
+  popup.classList.add("popup");
+
+  // Chama a função para buscar os movimentos do Pokémon
+  const moves = await fetchPokemonMoves(data.id);
+  console.log("Movimentos do Pokémon:", moves);  // Verifique os movimentos no console
+
+  // Cria o conteúdo do pop-up
+  const popupContent = `
+    <div class="popup-content" style="background-color: ${color};">  <!-- Aplique a cor do tipo ao fundo -->
+      <span class="close-btn" onclick="closePopup()">X</span>
+      <div class="popup-columns">
+        <!-- Coluna 1: Informações básicas -->
+        <div class="popup-column">
+          <h2>${data.name.charAt(0).toUpperCase() + data.name.slice(1)}</h2>
+          <img src="${data.sprites.front_default}" alt="${data.name}">
+          <p><strong>ID:</strong> #${data.id}</p>
+          <p><strong>Tipo(s):</strong> ${types.join(", ")}</p>
+          <p><strong>Altura:</strong> ${heightInMeters} m</p>
+          <p><strong>Peso:</strong> ${weightInKg} kg</p>
+        </div>
+        
+        <!-- Coluna 2: Movimentos -->
+        <div class="popup-column">
+          <h3>Movimentos:</h3>
+          <ul>
+            ${moves.map(move => `<li>${move}</li>`).join("")}
+          </ul>
+        </div>
+
+        <!-- Coluna 3: Evolução -->
+        <div class="popup-column">
+          <h3>Linha Evolutiva:</h3>
+          <div class="evolution-chain">
+            ${evolutionChain.map(evolution => `
+              <div class="evolution">
+                <img src="${evolution.image}" alt="${evolution.name}" style="width: 80px; height: 80px; margin-bottom: 5px;">
+                <p>${evolution.name}</p>
+                ${evolution.level ? `<p>Nível: ${evolution.level}</p>` : ""}
+                ${evolution.condition ? `<p>Condição: ${evolution.condition}</p>` : ""}
+              </div>
+            `).join("")}
+          </div>
+        </div>
+  `;
+
+  popup.innerHTML = popupContent;
+  document.body.appendChild(popup);  // Adiciona o pop-up no corpo da página
+
+  // Adiciona o estilo para o pop-up
+  document.body.style.overflow = "hidden";  // Desabilita o scroll da página quando o pop-up estiver aberto
+
+  // Fecha o pop-up se o clique for fora da área de conteúdo do pop-up
+  popup.addEventListener('click', function (event) {
+    if (event.target === popup) {
+      closePopup();
+    }
+  });
+
+  // Previne a propagação do clique quando o usuário clicar dentro do conteúdo do pop-up
+  const popupContentElement = popup.querySelector('.popup-content');
+  popupContentElement.addEventListener('click', function (event) {
+    event.stopPropagation();  // Impede que o evento se propague para o pop-up
+  });
+}
+
+// Função para buscar a cadeia evolutiva do Pokémon
+async function fetchEvolutionChain(pokemonId) {
+  const url = `https://pokeapi.co/api/v2/pokemon-species/${pokemonId}/`;
+  const response = await fetch(url);
+  const data = await response.json();
+
+  // Obter a cadeia de evolução a partir da espécie do Pokémon
+  const evolutionUrl = data.evolution_chain.url;
+  const evolutionResponse = await fetch(evolutionUrl);
+  const evolutionData = await evolutionResponse.json();
+
+  // Montar a linha evolutiva
+  const evolutionChain = [];
+  let currentEvolution = evolutionData.chain;
+
+  // Função auxiliar para processar todas as evoluções
+  function processEvolution(currentEvolution) {
+    const evolutions = [];
+
+    // Inclui o Pokémon básico (inicial) na linha evolutiva
+    const basicEvolution = {
+      name: currentEvolution.species.name.charAt(0).toUpperCase() + currentEvolution.species.name.slice(1),
+      level: currentEvolution.evolution_details[0]?.min_level || "",  // Se não for por nível, deixa em branco
+      condition: currentEvolution.evolution_details[0]?.condition ? currentEvolution.evolution_details[0].condition.name : null,
+      image: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${currentEvolution.species.url.split("/")[6]}.png`
+    };
+
+    evolutions.push(basicEvolution);
+
+    // Processo a evolução atual
+    currentEvolution.evolution_details.forEach(detail => {
+      const evolution = {
+        name: currentEvolution.species.name.charAt(0).toUpperCase() + currentEvolution.species.name.slice(1),
+        level: detail.min_level ? detail.min_level : "", // Removendo "N/A" quando não for por nível
+        condition: detail.condition ? detail.condition.name : null, // Condições especiais
+        image: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${currentEvolution.species.url.split("/")[6]}.png`  // Obtém a URL da imagem do Pokémon
+      };
+
+      // Se não tiver nível, deixa em branco (não exibe "N/A")
+      if (!evolution.level) {
+        evolution.level = "";
+      }
+
+      evolutions.push(evolution);
+    });
+
+    // Se houver evoluções para a próxima etapa
+    if (currentEvolution.evolves_to.length > 0) {
+      currentEvolution.evolves_to.forEach(evolution => {
+        evolutions.push(...processEvolution(evolution)); // Recursão para pegar as evoluções subsequentes
+      });
+    }
+
+    return evolutions;
+  }
+
+  // Chama a função auxiliar para processar todas as evoluções
+  const evolutions = processEvolution(currentEvolution);
+
+  // Remover evoluções duplicadas (caso existam)
+  const uniqueEvolutions = [];
+  const seen = new Set();
+  for (const evolution of evolutions) {
+    if (!seen.has(evolution.name)) {
+      seen.add(evolution.name);
+      uniqueEvolutions.push(evolution);
+    }
+  }
+
+  return uniqueEvolutions;
+}
+
+// Função para buscar os movimentos do Pokémon
+async function fetchPokemonMoves(id) {
+  const url = `https://pokeapi.co/api/v2/pokemon/${id}`;
+  try {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`Erro ao buscar movimentos do Pokémon ID ${id}`);
+    const data = await response.json();
+    const moves = data.moves.map(move => move.move.name);
+    return moves.slice(0, 5); // Retorna os 5 primeiros movimentos
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+}
+
+// Função para fechar o pop-up
+function closePopup() {
+  const popup = document.querySelector(".popup");
+  if (popup) {
+    document.body.removeChild(popup);  // Remove o pop-up
+    document.body.style.overflow = "auto";  // Habilita novamente o scroll da página
+  }
+}
+
+// Função para buscar os dados do Pokémon pela API
+async function fetchPoke(id) {
+  const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
+  const data = await response.json();
+  return data;
 }
 
 // Função Jogo de Perguntas sobre Pokémon
 async function startQuiz() {
   const randomId = Math.floor(Math.random() * pokeCount) + 1;
   const data = await fetchPoke(randomId);
-  document.getElementById("quizImage").src = data.sprites.front_default;
+
+  // Verifica se a imagem do Pokémon foi carregada corretamente
+  if (data.sprites && data.sprites.front_default) {
+    const imgElement = document.getElementById("quizImage");
+    imgElement.src = data.sprites.front_default;
+    imgElement.style.filter = "brightness(0)"; // Exibe a imagem em preto
+  } else {
+    console.error("Imagem do Pokémon não encontrada.");
+  }
+
+  // Limpa a resposta e o feedback
   document.getElementById("quizAnswer").value = "";
   document.getElementById("quizFeedback").textContent = "";
-  document.getElementById("quizAnswer").dataset.correctAnswer = data.name;
+
+  // Armazena a resposta correta
+  document.getElementById("quizAnswer").dataset.correctAnswer = data.name.toLowerCase();
 }
 
+// Função para verificar a resposta do usuário
 function checkAnswer() {
   const userAnswer = document.getElementById("quizAnswer").value.toLowerCase();
-  const correctAnswer = document.getElementById("quizAnswer").dataset
-    .correctAnswer;
+  const correctAnswer = document.getElementById("quizAnswer").dataset.correctAnswer;
+
   const feedback =
-    userAnswer === correctAnswer ? "Correto!" : `Errado! Era ${correctAnswer}.`;
+    userAnswer === correctAnswer
+      ? "Correto!"
+      : `Errado! Era ${correctAnswer.charAt(0).toUpperCase() + correctAnswer.slice(1)}.`;
+
   document.getElementById("quizFeedback").textContent = feedback;
+
+  // Revela a imagem em cores normais
+  document.getElementById("quizImage").style.filter = "none";
 }
+
+// Função para ir para a próxima pergunta
+function nextQuestion() {
+  startQuiz();
+}
+
+// Inicia o quiz automaticamente quando o site carrega
+window.onload = function () {
+  startQuiz();
+};
 
 // Função Explorador de Habilidades
 async function fetchAbilities() {
@@ -190,11 +414,11 @@ async function simulateBattle() {
   document.getElementById("battleImages").innerHTML = `
     <div class="battle-pokemon">
       <img src="${poke1.sprites.front_default}" alt="${poke1.name}" class="battle-image">
-      <p>${poke1.name.charAt(0).toUpperCase() + poke1.name.slice(1)} (Nível ${level1})</p>
+      <p>${poke1.name.charAt(0).toUpperCase() + poke1.name.slice(1)} (LV ${level1})</p>
     </div>
     <div class="battle-pokemon">
       <img src="${poke2.sprites.front_default}" alt="${poke2.name}" class="battle-image">
-      <p>${poke2.name.charAt(0).toUpperCase() + poke2.name.slice(1)} (Nível ${level2})</p>
+      <p>${poke2.name.charAt(0).toUpperCase() + poke2.name.slice(1)} (LV${level2})</p>
     </div>`;
 
   const winner = calculateBattleOutcome(poke1, poke2, level1, level2);
@@ -284,113 +508,6 @@ async function fetchTypeInfo() {
     }: ${pokemonList}</p>`;
   } else {
     typeInfoDiv.innerHTML = "<p>Tipo inválido. Tente novamente.</p>";
-  }
-}
-
-// Função Árvore de Evolução
-async function fetchEvolution() {
-  const pokemonId = document.getElementById("evolutionPokeId").value;
-  const evolutionList = document.getElementById("evolutionList");
-  const evolutionImages = document.getElementById("evolutionImages");
-
-  evolutionList.innerHTML = "";
-  evolutionImages.innerHTML = "";
-
-  const data = await fetchPoke(pokemonId);
-  if (data) {
-    const speciesUrl = data.species.url;
-    const speciesResponse = await fetch(speciesUrl);
-    const speciesData = await speciesResponse.json();
-
-    let evolvesFrom = null;
-    let evolvesTo = [];
-
-    if (speciesData.evolves_from_species) {
-      const evolvesFromUrl = speciesData.evolves_from_species.url;
-      const evolvesFromResponse = await fetch(evolvesFromUrl);
-      evolvesFrom = (await evolvesFromResponse.json()).name;
-    }
-
-    const evolutionChainUrl = speciesData.evolution_chain.url;
-    const evolutionChainResponse = await fetch(evolutionChainUrl);
-    const evolutionChainData = await evolutionChainResponse.json();
-
-    const findEvolution = (chain) => {
-      if (chain.species.name === data.name) {
-        return chain;
-      }
-      if (chain.evolves_to.length > 0) {
-        for (const evolution of chain.evolves_to) {
-          const result = findEvolution(evolution);
-          if (result) return result;
-        }
-      }
-      return null;
-    };
-
-    const currentEvolution = findEvolution(evolutionChainData.chain);
-    if (currentEvolution) {
-      currentEvolution.evolves_to.forEach((evolution) => {
-        evolvesTo.push(evolution.species.name);
-        if (evolution.evolves_to.length > 0) {
-          evolution.evolves_to.forEach((subEvolution) => {
-            evolvesTo.push(subEvolution.species.name);
-          });
-        }
-      });
-    }
-
-    let evolutionText = `${
-      data.name.charAt(0).toUpperCase() + data.name.slice(1)
-    }`;
-
-    if (evolvesFrom) {
-      evolutionText += ` evolui de ${
-        evolvesFrom.charAt(0).toUpperCase() + evolvesFrom.slice(1)
-      }`;
-    }
-
-    if (evolvesTo.length > 0) {
-      evolutionText += ` evolui para ${evolvesTo
-        .map((name) => name.charAt(0).toUpperCase() + name.slice(1))
-        .join(" e ")}.`;
-    } else {
-      evolutionText += ` e não evolui para mais ninguém.`;
-    }
-
-    if (!evolvesFrom && evolvesTo.length === 0) {
-      evolutionText = `${
-        data.name.charAt(0).toUpperCase() + data.name.slice(1)
-      } é de estágio único.`;
-    }
-
-    evolutionList.innerHTML = `<p>${evolutionText}</p>`;
-    if (evolvesFrom) {
-      const fromData = await fetchPoke(evolvesFrom);
-      evolutionImages.innerHTML += `<img src="${fromData.sprites.front_default}" alt="${fromData.name}">`;
-    }
-    evolutionImages.innerHTML += `<img src="${data.sprites.front_default}" alt="${data.name}">`;
-    for (const name of evolvesTo) {
-      const toData = await fetchPoke(name);
-      evolutionImages.innerHTML += `<img src="${toData.sprites.front_default}" alt="${toData.name}">`;
-    }
-  }
-}
-async function showBattleImage(pokeId, pokeNumber) {
-  if (!pokeId) return;
-
-  try {
-    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokeId}`);
-    const pokemon = await response.json();
-    const imgUrl = pokemon.sprites.front_default;
-    const imgElement =
-      pokeNumber === 1
-        ? document.getElementById("battleImage1")
-        : document.getElementById("battleImage2");
-    imgElement.src = imgUrl;
-    imgElement.style.display = "block"; 
-  } catch (error) {
-    console.error("Erro ao carregar a imagem do Pokémon:", error);
   }
 }
 
