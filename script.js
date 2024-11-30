@@ -739,35 +739,6 @@ function calculateDamage(level, attack, defense, typeMultiplier) {
   return baseDamage * typeMultiplier;
 }
 
-// Função Enciclopédia de Tipos
-async function fetchTypeInfo() {
-  const typeName = document.getElementById("typeName").value.toLowerCase();
-  const typeImage = document.getElementById("typeImage");
-  const typeInfoDiv = document.getElementById("typeInfo");
-
-  // Resetando a imagem e as informações
-  typeImage.style.display = "none";
-  typeInfoDiv.innerHTML = "";
-
-  if (mainTypes.includes(typeName)) {
-    typeImage.src = `path/to/type/images/${typeName}.png`; // Substitua pelo caminho correto das imagens
-    typeImage.style.display = "block";
-
-    const response = await fetch(`https://pokeapi.co/api/v2/type/${typeName}`);
-    const typeData = await response.json();
-
-    // Exibindo informações do tipo
-    const pokemonList = typeData.pokemon
-      .map((poke) => poke.pokemon.name)
-      .join(", ");
-    typeInfoDiv.innerHTML = `<p>Pokémon do Tipo ${
-      typeName.charAt(0).toUpperCase() + typeName.slice(1)
-    }: ${pokemonList}</p>`;
-  } else {
-    typeInfoDiv.innerHTML = "<p>Tipo inválido. Tente novamente.</p>";
-  }
-}
-
 // Função Construtor de Equipes
 const team = [];
 
