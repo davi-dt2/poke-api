@@ -1,25 +1,30 @@
 const pokeCount = 151;
 const colors = {
-  fire: "#FDDFDF",
-  grass: "#DEFDE0",
-  electric: "#FCF7DE",
-  water: "#DEF3FD",
-  ground: "#f4e7da",
-  rock: "#d5d5d4",
-  fairy: "#fceaff",
-  poison: "#98d7a5",
-  bug: "#f8d5a3",
-  dragon: "#97b3e6",
-  psychic: "#eaeda1",
-  flying: "#F5F5F5",
-  fighting: "#E6E0D4",
-  normal: "#F5F5F5",
-  ice: "#d0f0fd",
-  steel: "#d5d5e5",
-  ghost: "#a393eb",
-  dark: "#a9a9a9"
+  normal: "0, 0%, 70%",
+  fire: "20, 85%, 55%",
+  water: "200, 75%, 50%",
+  electric: "50, 95%, 60%",
+  grass: "120, 60%, 45%",
+  ice: "190, 100%, 85%",
+  fighting: "0, 75%, 45%",
+  poison: "280, 60%, 55%",
+  ground: "30, 40%, 45%",
+  flying: "220, 80%, 80%",
+  psychic: "300, 70%, 60%",
+  bug: "90, 55%, 40%",
+  rock: "35, 30%, 35%",
+  ghost: "260, 55%, 40%",
+  dragon: "270, 65%, 50%",
+  dark: "240, 20%, 20%",
+  steel: "210, 20%, 70%",
+  fairy: "330, 80%, 85%",
+  unknown: "0, 0%, 50%",
+  stellar: "240, 80%, 50%",
 };
 const mainTypes = Object.keys(colors);
+const getColor = (type, alpha) => {
+  return `hsla(${colors[type]}, ${alpha})`;
+};
 
 document.getElementById("sName").addEventListener("keypress", function (event) {
   if (event.key === "Enter") {
@@ -28,31 +33,33 @@ document.getElementById("sName").addEventListener("keypress", function (event) {
   }
 });
 function toggleDarkMode() {
-    document.body.classList.toggle("dark-mode");
-    document.querySelector("header").classList.toggle("dark-mode");
-    document.querySelector("h1").classList.toggle("dark-mode");
-    
-    document.querySelectorAll("input[type='text'], input[type='number']").forEach(input => {
-        input.classList.toggle("dark-mode");
+  document.body.classList.toggle("dark-mode");
+  document.querySelector("header").classList.toggle("dark-mode");
+  document.querySelector("h1").classList.toggle("dark-mode");
+
+  document
+    .querySelectorAll("input[type='text'], input[type='number']")
+    .forEach((input) => {
+      input.classList.toggle("dark-mode");
     });
 
-    document.querySelectorAll("button").forEach(button => {
-        button.classList.toggle("dark-mode");
-    });
+  document.querySelectorAll("button").forEach((button) => {
+    button.classList.toggle("dark-mode");
+  });
 
-    document.querySelectorAll(".card").forEach(card => {
-        card.classList.toggle("dark-mode");
-    });
+  document.querySelectorAll(".card").forEach((card) => {
+    card.classList.toggle("dark-mode");
+  });
 
-    document.querySelectorAll(".pokemonBox").forEach(box => {
-        box.classList.toggle("dark-mode");
-    });
+  document.querySelectorAll(".pokemonBox").forEach((box) => {
+    box.classList.toggle("dark-mode");
+  });
 
-    document.querySelectorAll("h2").forEach(h2 => {
-        h2.classList.toggle("dark-mode");
-    });
+  document.querySelectorAll("h2").forEach((h2) => {
+    h2.classList.toggle("dark-mode");
+  });
 
-    document.querySelector("footer").classList.toggle("dark-mode");
+  document.querySelector("footer").classList.toggle("dark-mode");
 }
 // Função para buscar os dados do Pokémon
 async function fetchPoke(id) {
@@ -74,7 +81,7 @@ function setSelector() {
 
 async function filter(selector, i) {
   const data = await fetchPoke(i);
-  return data.name.toUpperCase().includes(selector);  // Verifica se o nome do Pokémon contém o valor do filtro
+  return data.name.toUpperCase().includes(selector); // Verifica se o nome do Pokémon contém o valor do filtro
 }
 
 async function renderCards(selector) {
@@ -89,7 +96,7 @@ async function renderCards(selector) {
   for (let i = 1; i <= pokeCount; i++) {
     const match = await filter(selector, i);
     if (!selector || match) {
-      await createCard(i);  // Chama a função para criar o card
+      await createCard(i); // Chama a função para criar o card
     }
   }
 }
@@ -104,9 +111,11 @@ async function createCard(i) {
   const id = data.id.toString().padStart(3, "0");
   const types = data.types.map((type) => type.type.name);
   const mainType = types[0];
-  const color = colors[mainType] || "#F5F5F5";  // Cor baseada no tipo do Pokémon
+  const color = getColor(mainType, "0.5") || "#F5F5F5"; // Cor baseada no tipo do Pokémon
+  const borderColor = getColor(mainType, "0.9") || "#E3E3E3"; // Cor baseada no tipo do Pokémon
 
-  card.style.backgroundColor = color;  // Aplica a cor de fundo com base no tipo principal
+  card.style.backgroundColor = color; // Aplica a cor de fundo com base no tipo principal
+  card.style.borderColor = borderColor;
 
   const pokeInnerHTML = `
         <div class="imgContainer">
@@ -121,26 +130,27 @@ async function createCard(i) {
 
   card.innerHTML = pokeInnerHTML;
 
-// Adiciona evento de clique na carta para abrir o pop-up
-card.addEventListener("click", () => {
-  openPopup(data);  // Chama a função para abrir o pop-up com as informações do Pokémon
-});
+  // Adiciona evento de clique na carta para abrir o pop-up
+  card.addEventListener("click", () => {
+    openPopup(data); // Chama a função para abrir o pop-up com as informações do Pokémon
+  });
 
-document.querySelector("#pokeContainer").appendChild(card);
+  document.querySelector("#pokeContainer").appendChild(card);
 }
 
 // Função para abrir o pop-up com as informações do Pokémon
 async function openPopup(data) {
-  console.log("Abrindo pop-up para o Pokémon:", data);  // Verifique os dados do Pokémon no console
+  console.log("Abrindo pop-up para o Pokémon:", data); // Verifique os dados do Pokémon no console
 
   // Obtém o tipo principal do Pokémon para definir a cor do fundo
-  const types = data.types.map(type => type.type.name);
-  const mainType = types[0];  // O primeiro tipo é o tipo principal
-  const color = colors[mainType] || "#F5F5F5";  // Usamos a mesma cor que nas cartas, ou um padrão
+  const types = data.types.map((type) => type.type.name);
+  const mainType = types[0]; // O primeiro tipo é o tipo principal
+  const color = getColor(mainType, "0.5") || "#F5F5F5"; // Usamos a mesma cor que nas cartas, ou um padrão
+  const borderColor = getColor(mainType, "0.9") || "#E3E3E3"; // Cor baseada no tipo do Pokémon
 
   // Converte peso e altura para unidades mais compreensíveis
-  const heightInMeters = (data.height / 10).toFixed(2);  // altura em metros (decímetros para metros)
-  const weightInKg = (data.weight / 10).toFixed(2);  // peso em quilos (hectogramas para quilos)
+  const heightInMeters = (data.height / 10).toFixed(2); // altura em metros (decímetros para metros)
+  const weightInKg = (data.weight / 10).toFixed(2); // peso em quilos (hectogramas para quilos)
 
   // Busca a cadeia de evolução do Pokémon
   const evolutionChain = await fetchEvolutionChain(data.id);
@@ -151,12 +161,12 @@ async function openPopup(data) {
 
   // Chama a função para buscar os movimentos do Pokémon
   const moves = await fetchPokemonMoves(data.id);
-  console.log("Movimentos do Pokémon:", moves);  // Verifique os movimentos no console
+  console.log("Movimentos do Pokémon:", moves); // Verifique os movimentos no console
 
   // Cria o conteúdo do pop-up
   const popupContent = `
-    <div class="popup-content" style="background-color: ${color};">  <!-- Aplique a cor do tipo ao fundo -->
-      <span class="close-btn" onclick="closePopup()">X</span>
+    <div class="popup-content" style="background-color: ${color}; border-color: ${borderColor}">  <!-- Aplique a cor do tipo ao fundo -->
+      <span class="close-btn">X</span>
       <div class="popup-columns">
         <!-- Coluna 1: Informações básicas -->
         <div class="popup-column">
@@ -172,7 +182,7 @@ async function openPopup(data) {
         <div class="popup-column">
           <h3>Movimentos:</h3>
           <ul>
-            ${moves.map(move => `<li>${move}</li>`).join("")}
+            ${moves.map((move) => `<li>${move}</li>`).join("")}
           </ul>
         </div>
 
@@ -180,36 +190,67 @@ async function openPopup(data) {
         <div class="popup-column">
           <h3>Linha Evolutiva:</h3>
           <div class="evolution-chain">
-            ${evolutionChain.map(evolution => `
+            ${evolutionChain
+              .map(
+                (evolution) => `
               <div class="evolution">
-                <img src="${evolution.image}" alt="${evolution.name}" style="width: 80px; height: 80px; margin-bottom: 5px;">
+                <img src="${evolution.image}" alt="${
+                  evolution.name
+                }" style="width: 80px; height: 80px; margin-bottom: 5px;">
                 <p>${evolution.name}</p>
                 ${evolution.level ? `<p>Nível: ${evolution.level}</p>` : ""}
-                ${evolution.condition ? `<p>Condição: ${evolution.condition}</p>` : ""}
+                ${
+                  evolution.condition
+                    ? `<p>Condição: ${evolution.condition}</p>`
+                    : ""
+                }
               </div>
-            `).join("")}
+            `
+              )
+              .join("")}
           </div>
         </div>
+      </div>
+    </div>
   `;
 
+  // Função para fechar o pop-up
+  function closePopup() {
+    const popup = document.querySelector(".popup");
+    if (popup) {
+      document.body.removeChild(popup); // Remove o pop-up
+      document.body.style.overflow = "auto"; // Habilita novamente o scroll da página
+    }
+  }
+
   popup.innerHTML = popupContent;
-  document.body.appendChild(popup);  // Adiciona o pop-up no corpo da página
+  document.body.appendChild(popup); // Adiciona o pop-up no corpo da página
 
   // Adiciona o estilo para o pop-up
-  document.body.style.overflow = "hidden";  // Desabilita o scroll da página quando o pop-up estiver aberto
+  document.body.style.overflow = "hidden"; // Desabilita o scroll da página quando o pop-up estiver aberto
+
+  // Funcionalidade do botão de fechar
+  const closeButton = popup.querySelector(".close-btn");
+  if (closeButton) {
+    closeButton.addEventListener("click", closePopup);
+  } else {
+    console.error("Botão de fechar não encontrado");
+  }
 
   // Fecha o pop-up se o clique for fora da área de conteúdo do pop-up
-  popup.addEventListener('click', function (event) {
+  popup.addEventListener("click", function (event) {
     if (event.target === popup) {
       closePopup();
     }
   });
 
   // Previne a propagação do clique quando o usuário clicar dentro do conteúdo do pop-up
-  const popupContentElement = popup.querySelector('.popup-content');
-  popupContentElement.addEventListener('click', function (event) {
-    event.stopPropagation();  // Impede que o evento se propague para o pop-up
-  });
+  const popupContentElement = popup.querySelector(".popup-content");
+  if (popupContentElement) {
+    popupContentElement.addEventListener("click", function (event) {
+      event.stopPropagation(); // Impede que o evento se propague para o pop-up
+    });
+  }
 }
 
 // Função para buscar a cadeia evolutiva do Pokémon
@@ -233,34 +274,22 @@ async function fetchEvolutionChain(pokemonId) {
 
     // Inclui o Pokémon básico (inicial) na linha evolutiva
     const basicEvolution = {
-      name: currentEvolution.species.name.charAt(0).toUpperCase() + currentEvolution.species.name.slice(1),
-      level: currentEvolution.evolution_details[0]?.min_level || "",  // Se não for por nível, deixa em branco
-      condition: currentEvolution.evolution_details[0]?.condition ? currentEvolution.evolution_details[0].condition.name : null,
-      image: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${currentEvolution.species.url.split("/")[6]}.png`
+      name:
+        currentEvolution.species.name.charAt(0).toUpperCase() +
+        currentEvolution.species.name.slice(1),
+      level: currentEvolution.evolution_details[0]?.min_level || "", // Se não for por nível, deixa em branco
+      condition: currentEvolution.evolution_details[0]?.condition
+        ? currentEvolution.evolution_details[0].condition.name
+        : null,
+      image: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${
+        currentEvolution.species.url.split("/")[6]
+      }.png`,
     };
 
     evolutions.push(basicEvolution);
 
-    // Processo a evolução atual
-    currentEvolution.evolution_details.forEach(detail => {
-      const evolution = {
-        name: currentEvolution.species.name.charAt(0).toUpperCase() + currentEvolution.species.name.slice(1),
-        level: detail.min_level ? detail.min_level : "", // Removendo "N/A" quando não for por nível
-        condition: detail.condition ? detail.condition.name : null, // Condições especiais
-        image: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${currentEvolution.species.url.split("/")[6]}.png`  // Obtém a URL da imagem do Pokémon
-      };
-
-      // Se não tiver nível, deixa em branco (não exibe "N/A")
-      if (!evolution.level) {
-        evolution.level = "";
-      }
-
-      evolutions.push(evolution);
-    });
-
-    // Se houver evoluções para a próxima etapa
     if (currentEvolution.evolves_to.length > 0) {
-      currentEvolution.evolves_to.forEach(evolution => {
+      currentEvolution.evolves_to.forEach((evolution) => {
         evolutions.push(...processEvolution(evolution)); // Recursão para pegar as evoluções subsequentes
       });
     }
@@ -268,10 +297,8 @@ async function fetchEvolutionChain(pokemonId) {
     return evolutions;
   }
 
-  // Chama a função auxiliar para processar todas as evoluções
   const evolutions = processEvolution(currentEvolution);
 
-  // Remover evoluções duplicadas (caso existam)
   const uniqueEvolutions = [];
   const seen = new Set();
   for (const evolution of evolutions) {
@@ -289,22 +316,14 @@ async function fetchPokemonMoves(id) {
   const url = `https://pokeapi.co/api/v2/pokemon/${id}`;
   try {
     const response = await fetch(url);
-    if (!response.ok) throw new Error(`Erro ao buscar movimentos do Pokémon ID ${id}`);
+    if (!response.ok)
+      throw new Error(`Erro ao buscar movimentos do Pokémon ID ${id}`);
     const data = await response.json();
-    const moves = data.moves.map(move => move.move.name);
+    const moves = data.moves.map((move) => move.move.name);
     return moves.slice(0, 5); // Retorna os 5 primeiros movimentos
   } catch (error) {
     console.error(error);
     return [];
-  }
-}
-
-// Função para fechar o pop-up
-function closePopup() {
-  const popup = document.querySelector(".popup");
-  if (popup) {
-    document.body.removeChild(popup);  // Remove o pop-up
-    document.body.style.overflow = "auto";  // Habilita novamente o scroll da página
   }
 }
 
@@ -334,18 +353,22 @@ async function startQuiz() {
   document.getElementById("quizFeedback").textContent = "";
 
   // Armazena a resposta correta
-  document.getElementById("quizAnswer").dataset.correctAnswer = data.name.toLowerCase();
+  document.getElementById("quizAnswer").dataset.correctAnswer =
+    data.name.toLowerCase();
 }
 
 // Função para verificar a resposta do usuário
 function checkAnswer() {
   const userAnswer = document.getElementById("quizAnswer").value.toLowerCase();
-  const correctAnswer = document.getElementById("quizAnswer").dataset.correctAnswer;
+  const correctAnswer =
+    document.getElementById("quizAnswer").dataset.correctAnswer;
 
   const feedback =
     userAnswer === correctAnswer
       ? "Correto!"
-      : `Errado! Era ${correctAnswer.charAt(0).toUpperCase() + correctAnswer.slice(1)}.`;
+      : `Errado! Era ${
+          correctAnswer.charAt(0).toUpperCase() + correctAnswer.slice(1)
+        }.`;
 
   document.getElementById("quizFeedback").textContent = feedback;
 
@@ -363,32 +386,149 @@ window.onload = function () {
   startQuiz();
 };
 
-// Função Explorador de Habilidades
-async function fetchAbilities() {
-  const pokemonId = document.getElementById("abilityPokeId").value;
-  const abilityImage = document.getElementById("abilityImage");
+// Busca todos os ataques da API
+async function fetchAllMoves() {
+  try {
+    const response = await fetch("https://pokeapi.co/api/v2/move?limit=1000");
+    if (!response.ok) throw new Error("Erro ao buscar ataques.");
+    const data = await response.json();
+    return data.results.map((move) => move.name);
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+}
 
-  if (!pokemonId) {
-    document.getElementById("abilityList").textContent =
-      "Por favor, insira um ID de Pokémon.";
-    abilityImage.style.display = "none"; // Esconde a imagem se não houver ID
+// Inicializa as opções de ataques
+async function initializeMoveOptions() {
+  const moveSelect = document.getElementById("moveSelect");
+  const moves = await fetchAllMoves();
+  moves.forEach((move) => {
+    const option = document.createElement("option");
+    option.value = move;
+    option.textContent = move;
+    moveSelect.appendChild(option);
+  });
+}
+
+// Filtra ataques enquanto digita
+function filterMoves() {
+  const searchInput = document.getElementById("moveSearch").value.toLowerCase();
+  const options = document.querySelectorAll("#moveSelect option");
+  options.forEach((option) => {
+    option.style.display = option.value.includes(searchInput)
+      ? "block"
+      : "none";
+  });
+}
+
+// Busca e exibe detalhes do ataque
+async function fetchMoveDetails() {
+  const selectedMove = document.getElementById("moveSelect").value;
+  const moveDetails = document.getElementById("moveDetails");
+
+  if (!selectedMove) {
+    moveDetails.textContent = "Selecione um ataque.";
     return;
   }
 
-  const data = await fetchPoke(pokemonId);
-  if (data) {
-    const abilities = data.abilities
-      .map((ability) => ability.ability.name)
-      .join(", ");
-    document.getElementById(
-      "abilityList"
-    ).textContent = `Habilidades: ${abilities}`;
+  moveDetails.textContent = "";
 
-    // Atualiza a imagem do Pokémon
-    abilityImage.src = data.sprites.front_default; 
-    abilityImage.style.display = "block"; 
+  try {
+    const response = await fetch(
+      `https://pokeapi.co/api/v2/move/${selectedMove}`
+    );
+    if (!response.ok) throw new Error("Ataque não encontrado.");
+    const moveData = await response.json();
+
+    // Dados do ataque
+    const element = moveData.type.name;
+    const power = moveData.power || "N/A";
+    const accuracy = moveData.accuracy || "N/A";
+    const pp = moveData.pp || "N/A";
+    const damageClass = moveData.damage_class.name;
+    const descriptionEntry = moveData.effect_entries.find(
+      (entry) => entry.language.name === "en"
+    );
+    const description = descriptionEntry
+      ? descriptionEntry.short_effect
+      : "Descrição não encontrada.";
+
+    // Chama a função para abrir o pop-up com as informações traduzidas
+    openAbilityPopup(selectedMove, {
+      element,
+      power,
+      accuracy,
+      pp,
+      damageClass,
+      description,
+    });
+  } catch (error) {
+    moveDetails.textContent = "Erro ao buscar detalhes. Tente novamente.";
+    console.error(error);
   }
 }
+
+// Abre o pop-up com informações traduzidas
+function openAbilityPopup(name, details) {
+  const { element, power, accuracy, pp, damageClass, description } = details;
+  const color = getColor(element, "0.5") || "#F5F5F5"; // Cor padrão
+  const borderColor = getColor(element, "0.9") || "#E3E3E3";
+
+  const translation = {
+    power: "Poder",
+    accuracy: "Precisão",
+    pp: "Limite de usos (PP)",
+    damageClass: "Classe de Dano",
+    description: "Descrição",
+  };
+
+  const popup = document.createElement("div");
+  popup.id = "ability-popup"; // ID exclusivo para o pop-up de habilidade
+  popup.classList.add("popup");
+
+  popup.innerHTML = `
+    <div class="popup-content" style="background-color: ${color}; border-color: ${borderColor}">
+      <span class="close-btn" onclick="closePopup('ability-popup')">X</span>
+      <div class="popup-header">${
+        name.charAt(0).toUpperCase() + name.slice(1)
+      }</div>
+      <div class="popup-column">
+        <p><strong>Elemento:</strong> ${element}</p>
+        <p><strong>Limite de usos (PP):</strong> ${pp}</p>
+        <p><strong>Poder:</strong> ${power}</p>
+        <p><strong>Precisão:</strong> ${accuracy}%</p>
+        <p><strong>Classe de Dano:</strong> ${damageClass}</p>
+        <p><strong>Descrição:</strong> ${description}</p>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(popup);
+  document.body.style.overflow = "hidden"; // Desabilita o scroll da página
+
+  popup.addEventListener("click", function (event) {
+    if (event.target === popup) {
+      closePopup("ability-popup");
+    }
+  });
+
+  const popupContentElement = popup.querySelector(".popup-content");
+  popupContentElement.addEventListener("click", function (event) {
+    event.stopPropagation();
+  });
+}
+
+// Fecha o pop-up com base no id
+function closePopup(popupId) {
+  const popup = document.getElementById(popupId);
+  if (popup) {
+    document.body.removeChild(popup);
+    document.body.style.overflow = "auto"; // Habilita novamente o scroll da página
+  }
+}
+
+// Inicializa as opções ao carregar a página
+document.addEventListener("DOMContentLoaded", initializeMoveOptions);
 
 // Função Simulador de Batalhas
 async function simulateBattle() {
@@ -398,7 +538,8 @@ async function simulateBattle() {
   const level2 = parseInt(document.getElementById("battleLevel2").value) || 50;
 
   if (!poke1Id || !poke2Id) {
-    document.getElementById("battleResult").textContent = "Por favor, insira os IDs de dois Pokémon.";
+    document.getElementById("battleResult").textContent =
+      "Por favor, insira os IDs de dois Pokémon.";
     return;
   }
 
@@ -406,19 +547,28 @@ async function simulateBattle() {
   const poke2 = await fetchPoke(poke2Id);
 
   if (!poke1 || !poke2) {
-    document.getElementById("battleResult").textContent = "Não foi possível carregar os dados dos Pokémon.";
+    document.getElementById("battleResult").textContent =
+      "Não foi possível carregar os dados dos Pokémon.";
     return;
   }
 
   // Exibe as imagens dos Pokémon para a batalha em caixinhas
   document.getElementById("battleImages").innerHTML = `
     <div class="battle-pokemon">
-      <img src="${poke1.sprites.front_default}" alt="${poke1.name}" class="battle-image">
-      <p>${poke1.name.charAt(0).toUpperCase() + poke1.name.slice(1)} (LV ${level1})</p>
+      <img src="${poke1.sprites.front_default}" alt="${
+    poke1.name
+  }" class="battle-image">
+      <p>${
+        poke1.name.charAt(0).toUpperCase() + poke1.name.slice(1)
+      } (LV ${level1})</p>
     </div>
     <div class="battle-pokemon">
-      <img src="${poke2.sprites.front_default}" alt="${poke2.name}" class="battle-image">
-      <p>${poke2.name.charAt(0).toUpperCase() + poke2.name.slice(1)} (LV${level2})</p>
+      <img src="${poke2.sprites.front_default}" alt="${
+    poke2.name
+  }" class="battle-image">
+      <p>${
+        poke2.name.charAt(0).toUpperCase() + poke2.name.slice(1)
+      } (LV${level2})</p>
     </div>`;
 
   const winner = calculateBattleOutcome(poke1, poke2, level1, level2);
@@ -431,31 +581,138 @@ async function simulateBattle() {
 function calculateBattleOutcome(poke1, poke2, level1, level2) {
   const typeEffectiveness = {
     normal: { rock: 0.5, ghost: 0, steel: 0.5 },
-    fire: { grass: 2, ice: 2, bug: 2, steel: 2, water: 0.5, fire: 0.5, rock: 0.5, dragon: 0.5},
+    fire: {
+      grass: 2,
+      ice: 2,
+      bug: 2,
+      steel: 2,
+      water: 0.5,
+      fire: 0.5,
+      rock: 0.5,
+      dragon: 0.5,
+    },
     water: { fire: 2, ground: 2, rock: 2, water: 0.5, grass: 0.5, dragon: 0.5 },
-    electric: { water: 2, flying: 2, ground: 0, electric: 0.5, grass: 0.5, dragon: 0.5},
-    grass: { water: 2, ground: 2, rock: 2, fire: 0.5,  grass: 0.5, poison: 0.5, flying: 0.5, bug: 0.5, dragon: 0.5, steel: 0.5},
-    ice: { grass: 2, ground: 2, flying: 2, dragon: 2, fire: 0.5, water: 0.5, ice: 0.5,steel: 0.5},
-    fighting: { normal: 2, ice: 2, rock: 2, dark: 2, steel: 2, poison: 0.5, flying: 0.5, psychic: 0.5, bug: 0.5, ghost: 0, fairy: 0.5},
-    poison: { grass: 2, fairy: 2, poison: 0.5, ground: 0.5, rock: 0.5, ghost: 0.5, steel: 0},
-    ground: { fire: 2, electric: 2, poison: 2, rock: 2, steel: 2, grass: 0.5, bug: 0.5, flying: 0},
-    flying: { grass: 2, fighting: 2, bug: 2, electric: 0.5, rock: 0.5, steel: 0.5},
+    electric: {
+      water: 2,
+      flying: 2,
+      ground: 0,
+      electric: 0.5,
+      grass: 0.5,
+      dragon: 0.5,
+    },
+    grass: {
+      water: 2,
+      ground: 2,
+      rock: 2,
+      fire: 0.5,
+      grass: 0.5,
+      poison: 0.5,
+      flying: 0.5,
+      bug: 0.5,
+      dragon: 0.5,
+      steel: 0.5,
+    },
+    ice: {
+      grass: 2,
+      ground: 2,
+      flying: 2,
+      dragon: 2,
+      fire: 0.5,
+      water: 0.5,
+      ice: 0.5,
+      steel: 0.5,
+    },
+    fighting: {
+      normal: 2,
+      ice: 2,
+      rock: 2,
+      dark: 2,
+      steel: 2,
+      poison: 0.5,
+      flying: 0.5,
+      psychic: 0.5,
+      bug: 0.5,
+      ghost: 0,
+      fairy: 0.5,
+    },
+    poison: {
+      grass: 2,
+      fairy: 2,
+      poison: 0.5,
+      ground: 0.5,
+      rock: 0.5,
+      ghost: 0.5,
+      steel: 0,
+    },
+    ground: {
+      fire: 2,
+      electric: 2,
+      poison: 2,
+      rock: 2,
+      steel: 2,
+      grass: 0.5,
+      bug: 0.5,
+      flying: 0,
+    },
+    flying: {
+      grass: 2,
+      fighting: 2,
+      bug: 2,
+      electric: 0.5,
+      rock: 0.5,
+      steel: 0.5,
+    },
     psychic: { fighting: 2, poison: 2, psychic: 0.5, dark: 0, steel: 0.5 },
-    bug: {grass: 2, psychic: 2, dark: 2, fire: 0.5, fighting: 0.5, poison: 0.5, flying: 0.5, ghost: 0.5,steel: 0.5, fairy: 0.5},
-    rock: { fire: 2, ice: 2, flying: 2, bug: 2, fighting: 0.5, ground: 0.5, steel: 0.5},
-    ghost: { psychic: 2, ghost: 2, dark: 0.5, normal: 0 },dragon: { dragon: 2, steel: 0.5, fairy: 0 }, 
-    dark: { psychic: 2, ghost: 2, fighting: 0.5, dark: 0.5, fairy: 0.5 }, 
-    steel: {ice: 2, rock: 2, fairy: 2, fire: 0.5, water: 0.5, electric: 0.5, steel: 0.5},
-    fairy: { fighting: 2, dragon: 2, dark: 2, fire: 0.5, poison: 0.5, steel: 0.5}
+    bug: {
+      grass: 2,
+      psychic: 2,
+      dark: 2,
+      fire: 0.5,
+      fighting: 0.5,
+      poison: 0.5,
+      flying: 0.5,
+      ghost: 0.5,
+      steel: 0.5,
+      fairy: 0.5,
+    },
+    rock: {
+      fire: 2,
+      ice: 2,
+      flying: 2,
+      bug: 2,
+      fighting: 0.5,
+      ground: 0.5,
+      steel: 0.5,
+    },
+    ghost: { psychic: 2, ghost: 2, dark: 0.5, normal: 0 },
+    dragon: { dragon: 2, steel: 0.5, fairy: 0 },
+    dark: { psychic: 2, ghost: 2, fighting: 0.5, dark: 0.5, fairy: 0.5 },
+    steel: {
+      ice: 2,
+      rock: 2,
+      fairy: 2,
+      fire: 0.5,
+      water: 0.5,
+      electric: 0.5,
+      steel: 0.5,
+    },
+    fairy: {
+      fighting: 2,
+      dragon: 2,
+      dark: 2,
+      fire: 0.5,
+      poison: 0.5,
+      steel: 0.5,
+    },
   };
 
   const poke1Type = poke1.types[0].type.name;
   const poke2Type = poke2.types[0].type.name;
 
-  const poke1Atk = poke1.stats[1].base_stat; 
-  const poke1Def = poke1.stats[2].base_stat; 
-  const poke2Atk = poke2.stats[1].base_stat; 
-  const poke2Def = poke2.stats[2].base_stat; 
+  const poke1Atk = poke1.stats[1].base_stat;
+  const poke1Def = poke1.stats[2].base_stat;
+  const poke2Atk = poke2.stats[1].base_stat;
+  const poke2Def = poke2.stats[2].base_stat;
 
   const poke1TypeMultiplier = typeEffectiveness[poke1Type]?.[poke2Type] || 1;
   const poke2TypeMultiplier = typeEffectiveness[poke2Type]?.[poke1Type] || 1;
@@ -482,35 +739,6 @@ function calculateDamage(level, attack, defense, typeMultiplier) {
   return baseDamage * typeMultiplier;
 }
 
-// Função Enciclopédia de Tipos
-async function fetchTypeInfo() {
-  const typeName = document.getElementById("typeName").value.toLowerCase();
-  const typeImage = document.getElementById("typeImage");
-  const typeInfoDiv = document.getElementById("typeInfo");
-
-  // Resetando a imagem e as informações
-  typeImage.style.display = "none";
-  typeInfoDiv.innerHTML = "";
-
-  if (mainTypes.includes(typeName)) {
-    typeImage.src = `path/to/type/images/${typeName}.png`; // Substitua pelo caminho correto das imagens
-    typeImage.style.display = "block";
-
-    const response = await fetch(`https://pokeapi.co/api/v2/type/${typeName}`);
-    const typeData = await response.json();
-
-    // Exibindo informações do tipo
-    const pokemonList = typeData.pokemon
-      .map((poke) => poke.pokemon.name)
-      .join(", ");
-    typeInfoDiv.innerHTML = `<p>Pokémon do Tipo ${
-      typeName.charAt(0).toUpperCase() + typeName.slice(1)
-    }: ${pokemonList}</p>`;
-  } else {
-    typeInfoDiv.innerHTML = "<p>Tipo inválido. Tente novamente.</p>";
-  }
-}
-
 // Função Construtor de Equipes
 const team = [];
 
@@ -521,7 +749,7 @@ function addToTeam() {
     alert("O time já está completo! Máximo de 6 Pokémon.");
     return;
   }
-  
+
   if (!pokeId || team.includes(pokeId)) {
     alert("Por favor, insira um ID válido e que ainda não esteja na equipe.");
     return;
@@ -537,11 +765,12 @@ async function showTeamPokemon(id) {
 
   // Define a cor de fundo com base no tipo principal do Pokémon
   const primaryType = data.types[0].type.name;
-  const bgColor = colors[primaryType] || "#F0F0F0"; // Cor padrão se o tipo não estiver no objeto `colors`
+  const color = getColor(primaryType, "0.5") || "#F0F0F0"; // Cor padrão se o tipo não estiver no objeto `colors`
+  const borderColor = getColor(primaryType, "0.9") || "#E3E3E3";
 
   // Adiciona o Pokémon com estilo baseado no tipo
   imgContainer.innerHTML += `
-    <div class="team-member" style="background-color: ${bgColor};">
+    <div class="team-member" style="background-color: ${color}; border-color:${borderColor}">
       <img src="${data.sprites.front_default}" alt="${data.name}" class="team-image">
       <p class="team-name">${data.name}</p>
     </div>`;
@@ -555,11 +784,24 @@ async function fetchPoke(id) {
 
 function toggleDarkMode() {
   document.body.classList.toggle("dark-mode");
-  document.querySelector("header").classList.toggle("dark-mode");
-  document.querySelector("footer").classList.toggle("dark-mode");
-  document.querySelectorAll("input").forEach((el) => el.classList.toggle("dark-mode"));
-  document.querySelectorAll("button").forEach((el) => el.classList.toggle("dark-mode"));
-  document.querySelectorAll(".card").forEach((el) => el.classList.toggle("dark-mode"));
-  document.querySelectorAll(".pokemonBox").forEach((el) => el.classList.toggle("dark-mode"));
-  document.querySelectorAll("h1, h2").forEach((el) => el.classList.toggle("dark-mode"));
 }
+// Função para inicializar o Google Translate
+function googleTranslateElementInit() {
+  new google.translate.TranslateElement(
+    {
+      pageLanguage: "pt", // Idioma original da página
+      includedLanguages: "pt,en,es,fr,de,it,ja", // Idiomas para os quais pode ser traduzido
+      layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+    },
+    "google_translate_element"
+  );
+}
+
+// Carregar o script do Google Translate
+(function () {
+  var script = document.createElement("script");
+  script.type = "text/javascript";
+  script.src =
+    "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+  document.body.appendChild(script);
+})();
