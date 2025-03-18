@@ -7,21 +7,7 @@
   font-family: "arial", sans-serif;
 }
 
-:root {
-  --bgColor: #f0f8ff;
-  --textColor1: #333;
-  --textColor2: #333;
-
-  --headerBgColor1: #191970;
-  --headerBgColor2: #87cefa;
-  --headerColor: #cac2ff;
-
-  --inputBgColor: #483d8b;
-  --inputBgColorHover: #12046b;
-}
-
 body {
-  transition: background-color 0.3s, color 0.3s;
   line-height: 1.6;
   font-size: 16px;
   display: flex;
@@ -30,33 +16,27 @@ body {
   flex-direction: column;
   min-height: 100vh;
   margin: 0;
-  background-color: var(--bgColor);
-  color: var(--textColor2);
+  background-color: #f0f8ff;
+  color: #333;
 }
 
 body.dark-mode {
-  transition: background-color 0.3s, color 0.3s;
-
-  --bgColor: #1a1a1a;
-  --textColor1: #eee;
-  --textColor2: #f5a3a3;
-
-  --headerBgColor1: #fa102f;
-  --headerBgColor2: #ff4b63;
-  --headerColor: #fcebeb;
-
-  --inputBgColor: #a03f3f;
-  --inputBgColorHover: #860808;
+  background-color: #1a1a1a;
+  color: #f5a3a3; /* Combinação de tons de vermelho */
 }
 
 header {
-  background: linear-gradient(to bottom right, var(--headerBgColor1), var(--headerBgColor2));
-  color: var(--headerColor);
+  background: linear-gradient(to bottom right, #191970, #87cefa);
+  color: #cac2ff;
   padding: 1.5rem;
   text-align: center;
   width: 100%;
   position: relative;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+header.dark-mode {
+  background: linear-gradient(to bottom right, #fa102f, #ff4b63);
+  color: #fcebeb;
 }
 h1 {
   font-size: 2.5rem;
@@ -64,30 +44,7 @@ h1 {
   margin-bottom: 1rem;
 }
 
-.quiz {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 2em;
-}
-
-.abilityExplorer {
-  display: grid;
-  justify-items: center;
-}
-
-.battle {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.moves {
-  background-color: var(--bgColor);
-  color: var(--textColor1);
-}
-
-/* input[type="text"],
+input[type="text"],
 input[type="number"] {
   padding: 0.6rem;
   margin: 0.5rem 0;
@@ -99,7 +56,7 @@ input[type="number"] {
   background-color: #e8e5fa;
   transition: border-color 0.3s ease;
   box-sizing: border-box;
-} */
+}
 
 input[type="text"],
 input[type="number"] {
@@ -109,20 +66,28 @@ input[type="number"] {
   border-radius: 3px; /* Compromisso entre arredondado e quadrado */
   width: 80%;
   max-width: 300px;
-  color: var(--textColor2);
-  background-color: var(--bgColor);
+  color: #333;
+  background-color: #ffffff;
   transition: border-color 0.3s ease;
 }
 
 input[type="text"]:focus,
 input[type="number"]:focus {
-  border-color: var(--inputBgColor); 
+  border-color: #483d8b; 
   outline: none;
 }
 
+input[type="text"].dark-mode,
+input[type="number"].dark-mode {
+  border-color: #fa102f;
+  background-color: #2b2b2b;
+  color: #f5a3a3;
+}
+
+
 button {
-  background-color: var(--inputBgColor);
-  color: var(--headerColor);
+  background-color: #483d8b;
+  color: #cac2ff;
   border: none;
   border-radius: 0px;
   padding: 0.6rem 1.2rem;
@@ -134,8 +99,16 @@ button {
 }
 
 button:hover {
-  background-color: var(--inputBgColorHover);
+  background-color: #12046b;
   transform: translateY(-2px);
+}
+body.dark-mode button {
+  background-color: #fa102f;
+  color: #fcebeb;
+}
+
+body.dark-mode button:hover {
+  background-color: #db001d;
 }
 
 main {
@@ -144,6 +117,16 @@ main {
   flex-direction: column;
   align-items: center;
   text-align: center;
+}
+
+body.dark-mode {
+  background-color: #1a1a1a;
+  color: #f5a3a3;
+}
+
+header.dark-mode {
+  background: linear-gradient(to bottom right, #fa102f, #ff4b63);
+  color: #fcebeb;
 }
 
 #teamPokemonImage {
@@ -157,7 +140,7 @@ main {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: var(--headerColor);
+  background-color: #f0f8ff;
   border: 2px solid #858585;
   border-radius: 0px;
   padding: 1rem;
@@ -170,6 +153,10 @@ main {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
+.team-member.dark-mode {
+  background-color: #2b2b2b;
+  border-color: #fa102f;
+}
 
 .team-image {
   width: 80px;
@@ -179,16 +166,43 @@ main {
   border: 2px solid #858585;
 }
 
+.team-image.dark-mode {
+  border-color: #fa102f;
+}
 
 .team-name {
   font-weight: bold;
-  color: var(--textColor1);
+  color: #333;
   margin-top: 0.5rem;
+}
+
+.team-name.dark-mode {
+  color: #f5a3a3;
 }
 
 .team-level {
   font-size: 1rem;
   color: #555;
+}
+
+.team-level.dark-mode {
+  color: #fa102f;
+}
+
+input[type="text"].dark-mode,
+input[type="number"].dark-mode {
+  border-color: #fa102f;
+  background-color: #2b2b2b;
+  color: #f5a3a3;
+}
+
+body.dark-mode button {
+  background-color: #fa102f;
+  color: #fcebeb;
+}
+
+body.dark-mode button:hover {
+  background-color: #db001d;
 }
 
 @media (max-width: 768px) {
@@ -239,25 +253,22 @@ main {
 .popup-content {
   width: 80%;
   max-width: 800px;
-  background-color: #fff2ea; /* Fundo claro conforme o novo padrão */
-  border-radius: 8px; /* Bordas arredondadas */
+  background-color: #fff2ea; 
+  border-radius: 8px; 
   padding: 20px;
   display: flex;
-  flex-direction: column; /* Melhor para adaptação responsiva */
+  flex-direction: column; 
   gap: 20px;
   position: relative;
-  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3); /* Sombra mais suave */
-  border: 2px solid;
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
+  border: 2px solid #483d8b;
 }
 
 .popup-header {
   font-size: 1.6rem;
   font-weight: bold;
-  color: var(--inputBgColor);
+  color: #483d8b;
   text-align: center;
-  background-color: var(--bgColor);
-  border: 1px solid #797979;
-  border-radius: 6px;
 }
 
 .popup img {
@@ -268,16 +279,16 @@ main {
 
 .popup .close-btn {
   position: absolute;
-  top: 2px;
-  right: 2px;
+  top: 10px;
+  right: 10px;
   font-size: 1.6em;
   cursor: pointer;
-  color: var(--inputBgColor);
+  color: #483d8b;
   transition: color 0.3s ease;
 }
 
 .popup .close-btn:hover {
-  color: var(--inputBgColorHover);
+  color: #12046b;
 }
 
 .popup-columns {
@@ -287,9 +298,9 @@ main {
 }
 
 .popup-column {
-  flex: 1; /* Ajusta automaticamente para dividir o espaço */
-  background-color: var(--bgColor);
-  border: 1px solid #797979; /* Integração com os campos de entrada */
+  flex: 1; 
+  background-color: #e8e5fa;
+  border: 1px solid #797979; 
   padding: 15px;
   overflow-y: auto;
   border-radius: 6px; }
@@ -297,6 +308,7 @@ main {
 .popup-column h3 {
   margin-top: 0;
   font-size: 1.3em;
+  color: #483d8b;
 }
 
 .popup-column ul {
@@ -315,7 +327,7 @@ main {
   width: 50px;
   height: 50px;
   margin-right: 10px;
-  border-radius: 50%; /* Harmoniza com o padrão de imagens circulares */
+  border-radius: 50%; 
   border: 2px solid #797979;
 }
 
@@ -327,10 +339,10 @@ main {
 }
 
 .popup-footer button {
-  background-color: var(--inputBgColor);
+  background-color: #483d8b;
   color: #cac2ff;
   border: none;
-  border-radius: 6px; /* Bordas arredondadas */
+  border-radius: 6px;
   padding: 0.6rem 1.2rem;
   font-weight: bold;
   transition: background-color 0.3s ease, transform 0.2s ease;
@@ -341,7 +353,6 @@ main {
   transform: translateY(-2px);
 }
 
-/* Responsividade para dispositivos móveis */
 @media (max-width: 768px) {
   .popup-content {
     width: 95%;
@@ -350,12 +361,12 @@ main {
   }
 
   .popup-columns {
-    flex-direction: column; /* Colunas em pilha no modo móvel */
+    flex-direction: column; 
   }
 
   .popup-column {
     flex: none;
-    width: 100%; /* Coluna ocupa toda a largura */
+    width: 100%; 
   }
 
   .popup .close-btn {
@@ -365,7 +376,7 @@ main {
   }
 }
 
-/* Estilos para os Cards */
+
 .card-container {
   display: flex;
   justify-content: center;
@@ -382,13 +393,19 @@ main {
   overflow: hidden;
   padding: 1rem;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  width: 250px; /* Tamanho fixo para cada card */
-  flex-shrink: 0; /* Impede que os cards encolham */
+  width: 250px; 
+  flex-shrink: 0; 
 }
 
 .card:hover {
   transform: translateY(-5px);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.card.dark-mode {
+  background-color: #2b2b2b;
+  color: #d32f2f;
+  border: 2px solid #d32f2f;
 }
 
 .card img {
@@ -397,16 +414,15 @@ main {
   margin-bottom: 1rem;
 }
 
-
 .card h3 {
   font-size: 1.5rem;
-  color: var(--textColor2);
+  color: #333;
   margin-bottom: 0.5rem;
 }
 
 .card p {
   font-size: 1rem;
-  color: var(--textColor1);
+  color: #555;
   margin-bottom: 1rem;
 }
 
@@ -429,12 +445,12 @@ main {
 
 @media (max-width: 768px) {
   .card-container {
-    justify-content: center; /* Ajusta o alinhamento em telas menores */
+    justify-content: center; 
   }
 
   .card {
-    width: 100%; /* Faz os cards ocuparem toda a largura da tela em dispositivos pequenos */
-    max-width: 400px; /* Limita a largura máxima dos cards */
+    width: 100%; 
+    max-width: 400px; 
   }
 }
 
