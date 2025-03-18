@@ -11,54 +11,52 @@
     <header>
       <h1>Pokédex</h1>
       <input type="text" id="sName" placeholder="Buscar Pokémon" />
+      <br />
       <button id="btnProcurar" onclick="setSelector()">Procurar</button>
       <button onclick="toggleDarkMode()" id="darkModeToggle">
         Modo Escuro
       </button>
     </header>
     <main>
-      <div id="google_translate_element"></div>
       <div id="pokeContainer" class="card-container"></div>
-      <section class="quiz" id="quiz">
+      <section id="quiz">
         <h2>Jogo de Perguntas</h2>
         <img id="quizImage" src="" alt="Pokémon" />
+        <br />
         <input type="text" id="quizAnswer" placeholder="Quem é esse Pokémon?" />
+        <br>
         <button onclick="checkAnswer()">Responder</button>
         <button onclick="nextQuestion()">Próximo</button>
         <div id="quizFeedback"></div>
       </section>
 
-      <div>
-        <h2>Explorador de Habilidades</h2>
+      <div id="abilityExplorer">
+  <h2>Explorador de Habilidades</h2>
 
-        <div class="abilityExplorer">
-          <!-- Campo de busca -->
-          <label for="moveSearch">Digite para buscar:</label>
-          <input
-            type="text"
-            id="moveSearch"
-            placeholder="Comece a digitar um ataque..."
-            oninput="filterMoves()"
-          />
-          <!-- Campo de seleção de ataques -->
-          <label for="moveSelect">Selecione um ataque:</label>
-          <select
-            class="moves"
-            id="moveSelect"
-            size="10"
-            style="width: 80%; margin-top: 10px"
-            onclick="fetchMoveDetails()"
-          >
-            <!-- Opções serão adicionadas dinamicamente -->
-          </select>
-        </div>
+<div>
+<!-- Campo de busca -->
+<label for="moveSearch">Digite para buscar:</label>
+  <br>
+<input
+  type="text"
+  id="moveSearch"
+  placeholder="Comece a digitar um ataque..."
+  oninput="filterMoves()"
+/>
+<br>
+<!-- Campo de seleção de ataques -->
+<label for="moveSelect">Selecione um ataque:</label>
+  <br>
+<select id="moveSelect" size="10" style="width: 80%; margin-top: 10px" onclick="fetchMoveDetails()">
+  <!-- Opções serão adicionadas dinamicamente -->
+</select>
 
-        <!-- Área para exibir detalhes -->
-        <div id="moveDetails" style="margin-top: 20px; font-weight: bold"></div>
+<!-- Área para exibir detalhes -->
+<div id="moveDetails" style="margin-top: 20px; font-weight: bold;"></div>
 
-        <div id="google_translate_element"></div>
-      </div>
-      <section class="battle" id="battle">
+<div id="google_translate_element"></div>
+
+      <section id="battle">
         <h2>Simulador de Batalhas</h2>
         <input
           type="number"
@@ -68,12 +66,13 @@
           max="151"
           onchange="showBattleImage(this.value, 1)"
         />
-        <img
+         <img
           id="battleImage1"
           src=""
           alt="Pokémon 1"
           style="display: none; max-width: 150px; margin-top: 10px"
-        />
+        /> 
+        <br>
         <input
           type="number"
           id="battlePoke2"
@@ -82,13 +81,15 @@
           max="151"
           onchange="showBattleImage(this.value, 2)"
         />
-        <img
+         <img
           id="battleImage2"
           src=""
           alt="Pokémon 2"
           style="display: none; max-width: 150px; margin-top: 10px"
-        />
+        /> 
+        <br />
         <label for="battleLevel1">Nível do Pokémon 1:</label>
+        <br>
         <input
           type="number"
           id="battleLevel1"
@@ -97,7 +98,9 @@
           max="100"
           value="50"
         />
+        <br />
         <label for="battleLevel2">Nível do Pokémon 2:</label>
+        <br>
         <input
           type="number"
           id="battleLevel2"
@@ -106,6 +109,7 @@
           max="100"
           value="50"
         />
+        <br>
         <button onclick="simulateBattle()">Simular Batalha</button>
         <div id="battleResult"></div>
       </section>
@@ -119,19 +123,22 @@
         "
       ></div>
       <p id="battleResult"></p>
+      <!-- Enciclopédia de Tipos -->
       <section id="typeInfoContainer">
-        <!-- Construtor de Equipes -->
-        <section id="teamBuilder">
-          <h2>Construtor de Equipes</h2>
-          <input type="number" id="teamPokeId" placeholder="ID do Pokémon" />
-          <button onclick="addToTeam()">Adicionar à Equipe</button>
-          <div id="teamList"></div>
-          <div id="teamPokemonImage" style="margin-top: 10px"></div>
-          <!-- Adicionando um div para a imagem do Pokémon -->
-        </section>
-        <script src="script.js"></script>
-        <!-- Link para o JavaScript -->
+        
+      <!-- Construtor de Equipes -->
+      <section id="teamBuilder">
+        <h2>Construtor de Equipes</h2>
+        <input type="number" id="teamPokeId" placeholder="ID do Pokémon" />
+        <br>
+        <button onclick="addToTeam()">Adicionar à Equipe</button>
+        <div id="teamList"></div>
+        <div id="teamPokemonImage" style="margin-top: 10px"></div>
+        <!-- Adicionando um div para a imagem do Pokémon -->
       </section>
+    <div id="google_translate_element"></div>
     </main>
+    <script src="script.js"></script>
+    <!-- Link para o JavaScript -->
   </body>
 </html>
